@@ -430,8 +430,24 @@ export const App: React.FC = () => {
             <span>{FUNNY_SLOGANS[2].toUpperCase()}</span>
             <span>CLASSIC LINEN #FAF6ED · BRUNSWICK GREEN #0C4B2A</span>
             <p className="footer-credit">
-              Website built &amp; animated by <strong>dr. Novia DA</strong> ·{' '}
-              <span>Sentra Mitra Design</span>
+              Website built &amp; animated by{' '}
+              <a
+                href="https://github.com/drnovia"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-credit-author"
+              >
+                dr. Novia DA
+              </a>{' '}
+              ·{' '}
+              <a
+                href="https://github.com/Sentra-Artificial-Intelligence"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-credit-studio"
+              >
+                Sentra Mitra Design
+              </a>
             </p>
             <button
               type="button"
