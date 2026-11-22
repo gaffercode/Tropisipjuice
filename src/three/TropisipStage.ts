@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import type { CupSizeId, FlavorId } from '../data/flavors';
+import { FLAVOR_ORDER, type CupSizeId, type FlavorId } from '../data/flavors';
 import { BOTANICAL_LAYERS, LAYER_BY_KEY, type LayerKey } from '../data/layers';
 import { disposeObjectTree, TropisipCupAssembly } from './cupAssembly';
 import { computeStageKinematics, type StageKinematics } from './kinematics';
@@ -17,6 +17,7 @@ export interface TropisipStageOptions {
   macroCanvas: HTMLCanvasElement;
   getScrollProgress: () => number;
   onTelemetry?: (telemetry: MacroTelemetry) => void;
+  onReady?: () => void;
 }
 
 const MAIN_FOV = 34;
@@ -61,6 +62,7 @@ export class TropisipStage {
 
   private macroEnabled = false;
   private disposed = false;
+  private readonly idlePrewarmTimers: number[] = [];
 
   private lastLayerTitle = 'Gelas PP Berembun Dingin';
   private lastFeature = '420+ Butir Embun Dingin 4 °C';
@@ -134,7 +136,51 @@ export class TropisipStage {
     this.scene.add(this.cup.root);
 
     this.resize();
+
+    // Snap camera and cup directly to initial Hero kinematics before frame 0 (zero sideways jump)
+    const isCompact = window.innerWidth < 960;
+    const reducedMotion = Boolean(this.reducedMotionQuery?.matches);
+    const initialKinematics = computeStageKinematics(this.getScrollProgress(), isCompact);
+    this.smoothCamPos.set(
+      initialKinematics.cameraPos[0],
+      initialKinematics.cameraPos[1],
+      initialKinematics.cameraPos[2],
+    );
+    this.smoothCamTarget.set(
+      initialKinematics.cameraTarget[0],
+      initialKinematics.cameraTarget[1],
+      initialKinematics.cameraTarget[2],
+    );
+    this.mainCamera.position.copy(this.smoothCamPos);
+    this.mainCamera.lookAt(this.smoothCamTarget);
+    this.cup.snapToKinematics(initialKinematics, reducedMotion);
+
+    // Pre-compile GLSL shaders and commit frame 0 before starting animation loop (zero first-frame stutter)
+    this.renderer.compile(this.scene, this.mainCamera);
+    this.renderer.render(this.scene, this.mainCamera);
+    this.clock.getDelta();
     this.renderer.setAnimationLoop(this.tick);
+
+    // Notify React on next animation frame so CSS fade-in syncs cleanly with live GPU motion
+    if (options.onReady) {
+      const readyCb = options.onReady;
+      window.requestAnimationFrame(() => {
+        if (!this.disposed) {
+          readyCb();
+        }
+      });
+    }
+
+    // Stagger idle prewarm of the other 5 flavors' fruit chunk textures so switching is instant
+    const deferredFlavors = FLAVOR_ORDER.filter((id) => id !== 'mango');
+    deferredFlavors.forEach((id, idx) => {
+      const timerId = window.setTimeout(() => {
+        if (!this.disposed) {
+          this.cup.ensureFlavorChunksBuilt(id);
+        }
+      }, 380 + idx * 140);
+      this.idlePrewarmTimers.push(timerId);
+    });
   }
 
   public resize(): void {
@@ -319,6 +365,8 @@ export class TropisipStage {
 
   public dispose(): void {
     this.disposed = true;
+    this.idlePrewarmTimers.forEach((id) => window.clearTimeout(id));
+    this.idlePrewarmTimers.length = 0;
     this.renderer.setAnimationLoop(null);
     disposeObjectTree(this.scene);
     this.envMap.dispose();
