@@ -1,0 +1,33 @@
+{
+  "name": "tropisip",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Tropisip ('Good Juice, Good Vibes') — 100% procedural tropical editorial 3D juice landing page",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 4180",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4180",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "deploy:dry-run": "node scripts/deploy-dry-run.mjs"
+  },
+  "dependencies": {
+    "@fontsource/jetbrains-mono": "^5.2.5",
+    "@fontsource/poppins": "^5.2.5",
+    "lenis": "^1.3.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "three": "^0.175.0"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@types/three": "^0.175.0",
+    "@vitejs/plugin-react": "^4.4.1",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.1.4"
+  }
+}

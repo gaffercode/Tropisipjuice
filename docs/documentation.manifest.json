@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "1.0",
+  "standard": "SRDS-L2",
+  "scope": ".",
+  "profile": "full-product",
+  "categories": {
+    "identity": {
+      "state": "documented",
+      "document": "README.md",
+      "evidence": ["package.json", "index.html", "src/data/flavors.ts", "docs/assets/tropisip-mark.svg"],
+      "rationale": "Reviewed actual product identity, 6-flavor menu catalog, bundled font setup, and verified local commands; unverified external deployment claims are omitted."
+    },
+    "agent_guidance": {
+      "state": "documented",
+      "document": "AGENTS.md",
+      "evidence": [".agents/HANDOFF.md", ".agents/CONTEXT.md", ".agents/DECISIONS.md", "project.contract.json"],
+      "rationale": "Documents capsule read order, SAFRS authority hierarchy, R1-R3 risk boundaries, PII fence for sources/, and exact capsule-root lifecycle commands."
+    },
+    "architecture": {
+      "state": "documented",
+      "document": "docs/architecture/ARCHITECTURE.md",
+      "evidence": ["src/main.tsx", "src/App.tsx", "src/three/TropisipStage.ts", "src/three/cupAssembly.ts", "src/audio/foleyEngine.ts"],
+      "rationale": "Maps all real browser modules, procedural WebGL/GLSL rendering pipeline, dual-camera 2.6x macro pass, ref-driven control flow, and Vite chunk boundaries."
+    },
+    "engineering": {
+      "state": "documented",
+      "document": "docs/engineering/DEVELOPMENT.md",
+      "evidence": ["package.json", "pnpm-workspace.yaml", "tsconfig.json", "vite.config.ts", "vitest.config.ts"],
+      "rationale": "Covers Node 24 and pnpm prerequisites, isolated capsule workspace rules, zero env var requirements, and reproducible dev/typecheck/test/build workflows."
+    },
+    "security": {
+      "state": "documented",
+      "document": "docs/security/SECURITY.md",
+      "evidence": [".gitignore", "tests/tropisip.test.ts", "src/lib/reservation.ts", "src/components/OrderCateringForm.tsx"],
+      "rationale": "Documents public marketing posture, gitignored sources/ PII fence, automated zero-external-URL and zero-phone-number tests, transient form state, and escalation."
+    },
+    "operations": {
+      "state": "documented",
+      "document": "docs/operations/RUNBOOK.md",
+      "evidence": ["package.json", "project.contract.json", "scripts/deploy-dry-run.mjs", "vite.config.ts"],
+      "rationale": "Documents local dev/preview lifecycle on 127.0.0.1:4180, smoke expectations, zero mutable runtime state, static artifact recovery, and owner escalation."
+    },
+    "governance": {
+      "state": "documented",
+      "document": "docs/governance/BOUNDARIES.md",
+      "evidence": ["AGENTS.md", "project.contract.json", ".agents/HANDOFF.md", ".agents/CONTEXT.md"],
+      "rationale": "Defines SAFRS v1.1 capsule sovereignty, R0-R3 risk gates, no-monorepo-origin publication boundary, and human approval authority for merges and deployments."
+    },
+    "api_integrations": {
+      "state": "not_applicable",
+      "rationale": "Inspected src/ and package.json: Tropisip is a pure client-side static Vite SPA with zero HTTP endpoints, API routes, webhooks, or external service integrations."
+    },
+    "data_persistence": {
+      "state": "not_applicable",
+      "rationale": "Inspected src/, package.json, and project.contract.json: zero databases, ORMs, migrations, or browser storage are used; menu specs are static TypeScript and drafts are ephemeral React state."
+    },
+    "deployment": {
+      "state": "documented",
+      "document": "docs/operations/DEPLOYMENT.md",
+      "evidence": ["scripts/deploy-dry-run.mjs", "project.contract.json", "vite.config.ts"],
+      "rationale": "Documents static dist/ artifact profile, local deploy:dry-run and preview smoke contract, unconfigured live host status, and R3 human promotion boundaries."
+    },
+    "observability": {
+      "state": "not_applicable",
+      "rationale": "Inspected src/ and package.json: zero backend services, remote log sinks, metrics pipelines, or APM tracers exist; client WebGL fallback UI and DevTools console cover local diagnostics."
+    },
+    "architecture_decisions": {
+      "state": "documented",
+      "document": "docs/architecture/DECISIONS.md",
+      "evidence": [".agents/DECISIONS.md", "src/three/cupAssembly.ts", "src/data/flavors.ts", "src/App.tsx"],
+      "rationale": "Records five evidence-backed capsule ADRs covering procedural zero-asset craft, GLSL photorealism, 6-flavor menu sync, ref-driven performance, and PII fencing plus open items."
+    },
+    "collaboration": {
+      "state": "not_applicable",
+      "rationale": "Inspected package.json (private: true) and project.contract.json: private single-owner corporate capsule owned by Gaffer without an external open-source contributor workflow."
+    },
+    "release_history": {
+      "state": "documented",
+      "document": "CHANGELOG.md",
+      "evidence": ["package.json", ".agents/HANDOFF.md", "tests/tropisip.test.ts"],
+      "rationale": "Records verified 1.0.0 capsule milestones and performance refactor evidence observed in this repository without inventing prior releases."
+    },
+    "regulatory_safety": {
+      "state": "not_applicable",
+      "rationale": "Inspected src/ and project.contract.json: commercial food and beverage showcase under projects/corporate/ with zero clinical workflows, medical advice, or regulated PHI/RME data."
+    }
+  },
+  "deliverables": {
+    "product_identity": {
+      "state": "documented",
+      "document": "README.md",
+      "evidence": ["package.json", "index.html", "src/data/flavors.ts", "docs/assets/tropisip-mark.svg"],
+      "rationale": "Sentra v2.1 product-first README verified against live source, 6 official poster flavors, self-hosted fonts, real commands, and explicit verification status."
+    },
+    "agent_instructions": {
+      "state": "documented",
+      "document": "AGENTS.md",
+      "evidence": [".agents/HANDOFF.md", ".agents/CONTEXT.md", ".agents/DECISIONS.md", "project.contract.json"],
+      "rationale": "Capsule-local agent router specifying read order, SAFRS sovereignty, PII fence on sources/, exact lifecycle commands, and acceptance gates."
+    },
+    "product_scope": {
+      "state": "documented",
+      "document": "docs/product/PRODUCT_SCOPE.md",
+      "evidence": ["src/App.tsx", "src/data/flavors.ts", "src/data/layers.ts", "src/components/OrderCateringForm.tsx"],
+      "rationale": "Defines user and operator personas, implemented 3D/audio/reservation workflows, explicit non-goals, and known browser/client-only limitations."
+    },
+    "system_architecture": {
+      "state": "documented",
+      "document": "docs/architecture/ARCHITECTURE.md",
+      "evidence": ["src/main.tsx", "src/App.tsx", "src/three/TropisipStage.ts", "src/three/cupAssembly.ts", "src/three/proceduralHdri.ts"],
+      "rationale": "Documents actual SPA entrypoints, Mermaid component topology, procedural WebGL/GLSL pipeline, dual-camera 2.6x macro pass, ref-driven performance, and chunk layout."
+    },
+    "architecture_decisions": {
+      "state": "documented",
+      "document": "docs/architecture/DECISIONS.md",
+      "evidence": [".agents/DECISIONS.md", "src/three/cupAssembly.ts", "src/App.tsx", "project.contract.json"],
+      "rationale": "Evidence-backed ADR register covering procedural zero-asset craft, clear PP/GLSL cup realism, 6-flavor menu sync, ref-driven rendering, PII fencing, and open questions."
+    },
+    "developer_setup": {
+      "state": "documented",
+      "document": "docs/engineering/DEVELOPMENT.md",
+      "evidence": ["package.json", "pnpm-workspace.yaml", "pnpm-lock.yaml", "tsconfig.json", "vite.config.ts"],
+      "rationale": "Verified Node 24 and pnpm prerequisites, isolated capsule workspace setup, zero required env vars, strict port 4180 dev/preview workflow, and WebGL/HMR caveats."
+    },
+    "testing_strategy": {
+      "state": "documented",
+      "document": "docs/engineering/TESTING.md",
+      "evidence": ["vitest.config.ts", "tests/tropisip.test.ts", "src/lib/reservation.ts", "src/three/kinematics.ts"],
+      "rationale": "Catalogs all 8 Vitest tests across 4 suites, synthetic non-PII fixtures, browser audit methods, and explicit automated coverage gaps (WebGL shaders, mobile touch)."
+    },
+    "verification_evidence": {
+      "state": "documented",
+      "document": "docs/engineering/VERIFICATION.md",
+      "evidence": ["package.json", "tests/tropisip.test.ts", "scripts/deploy-dry-run.mjs", ".agents/HANDOFF.md"],
+      "rationale": "Records directly observed exit codes and outputs from 2026-11-22 checks alongside explicitly marked NOT RUN extraction/mobile gates and the escalated lint contract mismatch."
+    },
+    "security_boundaries": {
+      "state": "documented",
+      "document": "docs/security/SECURITY.md",
+      "evidence": [".gitignore", "tests/tropisip.test.ts", "src/lib/reservation.ts", "src/components/OrderCateringForm.tsx"],
+      "rationale": "Documents static public posture, zero secrets/auth, gitignored sources/ PII fence, automated regex guards in Vitest, non-cryptographic TSIP codes, and incident escalation."
+    },
+    "operations_runbook": {
+      "state": "documented",
+      "document": "docs/operations/RUNBOOK.md",
+      "evidence": ["package.json", "project.contract.json", "scripts/deploy-dry-run.mjs", "vite.config.ts"],
+      "rationale": "Covers local dev/preview start/stop on 127.0.0.1:4180, smoke verification, static artifact rebuild recovery, ownership, and R2/R3 escalation triggers."
+    },
+    "troubleshooting": {
+      "state": "documented",
+      "document": "docs/operations/TROUBLESHOOTING.md",
+      "evidence": ["src/components/StageCanvas.tsx", "src/audio/foleyEngine.ts", "scripts/deploy-dry-run.mjs", "project.contract.json"],
+      "rationale": "Documents concrete diagnostics and recovery steps for port 4180 conflicts, WebGL context loss, Web Audio autoplay suspension, PII test failures, and the lint contract mismatch."
+    },
+    "governance_boundaries": {
+      "state": "documented",
+      "document": "docs/governance/BOUNDARIES.md",
+      "evidence": ["AGENTS.md", "project.contract.json", ".agents/HANDOFF.md", ".agents/CONTEXT.md"],
+      "rationale": "Defines SAFRS v1.1 authority hierarchy, R0-R3 risk matrix, capsule sovereignty, no-monorepo-origin publication fence, and terminal human approval gates."
+    },
+    "api_integrations": {
+      "state": "not_applicable",
+      "rationale": "Inspected src/ and package.json: zero HTTP API routes, webhooks, WhatsApp clients, or external service SDKs exist; reservation confirmation runs purely in browser memory."
+    },
+    "data_model": {
+      "state": "not_applicable",
+      "rationale": "Inspected src/, package.json, and project.contract.json: zero databases, ORM schemas, migrations, or persistent client storage exist; catalog data is static TypeScript."
+    },
+    "deployment_release": {
+      "state": "documented",
+      "document": "docs/operations/DEPLOYMENT.md",
+      "evidence": ["scripts/deploy-dry-run.mjs", "project.contract.json", "vite.config.ts"],
+      "rationale": "Documents dist/ static output layout, executable deploy:dry-run and preview smoke checks, current unconfigured live hosting status, and R3 promotion/rollback controls."
+    },
+    "observability": {
+      "state": "not_applicable",
+      "rationale": "Inspected src/ and package.json: no backend runtime, remote log collector, metrics emitter, or distributed tracing exists; local diagnostics rely on DevTools and WebGL fallback UI."
+    },
+    "regulatory_safety": {
+      "state": "not_applicable",
+      "rationale": "Inspected src/ and project.contract.json: corporate food and beverage marketing showcase under projects/corporate/ with zero clinical decision logic or regulated health/PHI records."
+    },
+    "collaboration": {
+      "state": "not_applicable",
+      "rationale": "Inspected package.json (private: true) and project.contract.json: private single-owner corporate capsule owned by Gaffer without external open-source contribution workflows."
+    },
+    "release_history": {
+      "state": "documented",
+      "document": "CHANGELOG.md",
+      "evidence": ["package.json", ".agents/HANDOFF.md", "tests/tropisip.test.ts"],
+      "rationale": "Tracks actual verified 1.0.0 capsule deliverables and /react-best-practices refactor milestones without inventing unverified historical releases."
+    }
+  }
+}

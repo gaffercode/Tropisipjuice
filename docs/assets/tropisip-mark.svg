@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="120" viewBox="0 0 260 124" fill="none" role="img" aria-label="Tropisip — Good Juice, Good Vibes">
+  <rect width="260" height="124" rx="22" fill="#FAF6ED" stroke="#0C4B2A" stroke-opacity="0.18" stroke-width="2" />
+  <g fill="#0C4B2A">
+    <path d="M161 30 C153 22 146 15 148 11 C155 12 164 19 165 29 Z" />
+    <path d="M170 28 C169 16 176 8 183 7 C185 16 181 25 172 30 Z" />
+    <path d="M178 32 C185 25 194 23 198 26 C194 32 186 35 178 34 Z" />
+  </g>
+  <text x="130" y="67" text-anchor="middle" fill="#0C4B2A" font-family="Poppins, Segoe UI, sans-serif" font-weight="800" font-size="50" letter-spacing="-2">tropisip</text>
+  <path d="M54 80 Q130 72 206 80" stroke="#FFB800" stroke-width="4" stroke-linecap="round" fill="none" />
+  <ellipse cx="42" cy="83" rx="4.2" ry="2.1" transform="rotate(24 42 83)" fill="#0C4B2A" />
+  <ellipse cx="218" cy="83" rx="4.2" ry="2.1" transform="rotate(-24 218 83)" fill="#0C4B2A" />
+  <text x="130" y="104" text-anchor="middle" fill="#0C4B2A" font-family="Poppins, Segoe UI, sans-serif" font-weight="700" font-size="10" letter-spacing="2.6">GOOD JUICE, GOOD VIBES</text>
+</svg>
