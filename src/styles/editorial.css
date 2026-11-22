@@ -1551,14 +1551,30 @@ button {
   color: var(--green-deep);
 }
 
-.footer-credit strong {
+.footer-credit-author {
   color: var(--green);
   font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.footer-credit span {
+.footer-credit-author:hover {
+  color: var(--cta-orange-hover);
+  border-bottom-color: var(--cta-orange);
+}
+
+.footer-credit-studio {
   color: var(--cta-cyan-hover);
   font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1.5px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.footer-credit-studio:hover {
+  color: var(--cta-cyan);
+  border-bottom-color: var(--cta-cyan);
 }
 
 .back-to-top-btn {

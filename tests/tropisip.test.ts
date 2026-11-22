@@ -181,7 +181,9 @@ describe('Audit 100% Prosedural, Nol Aset Eksternal & Nol PII', () => {
     const root = resolve(__dirname, '..');
     const files = [join(root, 'index.html'), ...collectFiles(join(root, 'src'))];
 
-    const externalAssetPattern = /https?:\/\/(?!www\.w3\.org\/2000\/svg)/i;
+    // Allow W3C SVG namespace & explicit footer GitHub credit links; block all external runtime assets/CDNs
+    const externalAssetPattern =
+      /https?:\/\/(?!(?:www\.w3\.org\/2000\/svg|github\.com\/(?:drnovia|Sentra-Artificial-Intelligence)\b))/i;
     const phonePattern = /\+?62[\s-]?\d{3}[\s-]?\d{3,4}[\s-]?\d{3,4}/;
 
     for (const filePath of files) {
