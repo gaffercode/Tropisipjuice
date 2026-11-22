@@ -25,7 +25,7 @@
 <small><a href="https://sentrahai.com/"><b>Sentra Artificial Intelligence</b></a></small><br />
 <small>Explore six Tropisip juices in a 3D cup and estimate a quick order or event catering in Bahasa Indonesia.</small><br /><br />
 
-<small>Owned by <b>dr. Ferdi Iskandar (the Gaffer)</b> · Website built and animated by <b>dr. Novia DA — Sentra Mitra Design</b>.</small>
+<small>A collaboration between <b>dr. Ferdi Iskandar (the Gaffer)</b> and <b>dr. Novia DA of Sentra Mitra Design</b>.</small>
 
 <p>
   <a href="https://github.com/gaffercode/Tropisipjuice" title="GitHub"><img src="https://cdn.simpleicons.org/github/8B949E" width="22" height="22" alt="GitHub" /></a>&nbsp;&nbsp;
@@ -127,13 +127,12 @@ The repository contains the static web application, capsule lifecycle contract a
 
 ```mermaid
 flowchart TB
-  VISITOR["Visitor or event planner"]
-  UI["React editorial interface"]
-  STAGE["Three.js cup and macro view"]
-  AUDIO["Opt-in Web Audio foley"]
-  ESTIMATE["Order and catering calculator"]
-  CATALOG["Static menu and layer data"]
-  RECEIPT["Local estimate and reference code"]
+  VISITOR["Visitor"]
+  UI["React interface"]
+  STAGE["3D cup"]
+  AUDIO["Opt-in audio"]
+  ESTIMATE["Order estimate"]
+  CATALOG["Menu data"]
 
   VISITOR --> UI
   UI --> STAGE
@@ -141,14 +140,13 @@ flowchart TB
   UI --> ESTIMATE
   CATALOG --> UI
   CATALOG --> ESTIMATE
-  ESTIMATE --> RECEIPT
 
   classDef authority fill:#0D1117,stroke:#F59E0B,color:#ffffff,stroke-width:2px;
   class VISITOR authority;
   classDef core fill:#0D1117,stroke:#5B8CFF,color:#ffffff,stroke-width:2px;
   class STAGE,ESTIMATE core;
   classDef surface fill:#0D1117,stroke:#22D3EE,color:#ffffff,stroke-width:1.5px;
-  class UI,RECEIPT surface;
+  class UI surface;
   classDef data fill:#0D1117,stroke:#0EA5E9,color:#ffffff,stroke-width:1.5px;
   class CATALOG data;
   classDef shared fill:#0D1117,stroke:#64748B,color:#ffffff,stroke-width:1.5px;
@@ -257,14 +255,14 @@ flowchart TB
 
 ```mermaid
 flowchart TB
-  ENTRY["Static HTML and bundled scripts"]
-  APP["React mount and App state"]
-  INPUT["Lenis and pointer events"]
-  CANVAS["StageCanvas and refs"]
-  LOOP["Three.js render loop"]
-  MAIN["Main WebGL canvas"]
-  MACRO["Macro render target"]
-  FALLBACK["WebGL fallback message"]
+  ENTRY["Static bundle"]
+  APP["React state"]
+  INPUT["Scroll and pointer"]
+  CANVAS["StageCanvas"]
+  LOOP["Three.js renderer"]
+  MAIN["WebGL canvas"]
+  MACRO["Macro target"]
+  FALLBACK["WebGL fallback"]
 
   ENTRY --> APP
   APP --> CANVAS
@@ -272,7 +270,7 @@ flowchart TB
   CANVAS --> LOOP
   LOOP --> MAIN
   LOOP --> MACRO
-  CANVAS -. initialization failure .-> FALLBACK
+  CANVAS -. init fails .-> FALLBACK
 
   classDef core fill:#0D1117,stroke:#5B8CFF,color:#ffffff,stroke-width:2px;
   class LOOP,MACRO core;
@@ -318,21 +316,18 @@ The [architecture notes](docs/architecture/ARCHITECTURE.md) and [decision regist
 
 ```mermaid
 flowchart TB
-  VISITOR["Choose mode, size and quantities"]
-  DRAFT["Order draft in browser memory"]
-  PRICE["Catalog pricing and discounts"]
-  VALID["Draft validation"]
-  ERROR["Inline corrections"]
-  CODE["TSIP reference and estimate"]
-  STAFF["Staff confirmation outside this app"]
+  VISITOR["Enter order details"]
+  PRICE["Calculate price"]
+  VALID["Validate draft"]
+  ERROR["Field errors"]
+  CODE["Local TSIP reference"]
+  STAFF["Staff confirmation"]
 
-  VISITOR --> DRAFT
-  DRAFT --> PRICE
+  VISITOR --> PRICE
   PRICE --> VALID
-  VALID -->|Valid draft| CODE
-  VALID -->|Invalid draft| ERROR
-  ERROR --> DRAFT
-  CODE -. manual follow-up .-> STAFF
+  VALID -->|Valid| CODE
+  VALID -->|Invalid| ERROR
+  CODE -. manual .-> STAFF
 
   classDef authority fill:#0D1117,stroke:#F59E0B,color:#ffffff,stroke-width:2px;
   class VISITOR,STAFF authority;
@@ -341,7 +336,7 @@ flowchart TB
   classDef core fill:#0D1117,stroke:#5B8CFF,color:#ffffff,stroke-width:2px;
   class PRICE core;
   classDef surface fill:#0D1117,stroke:#22D3EE,color:#ffffff,stroke-width:1.5px;
-  class DRAFT,CODE surface;
+  class CODE surface;
   classDef danger fill:#0D1117,stroke:#EF4444,color:#ffffff,stroke-width:2px;
   class ERROR danger;
 ```
@@ -451,25 +446,23 @@ While preview runs, use `curl --fail --silent --show-error http://127.0.0.1:4180
 
 ```mermaid
 flowchart TB
-  SOURCE["Source and lockfile"]
-  CHECK["Typecheck and Vitest"]
-  BUILD["Build and dry-run"]
-  PREVIEW["Local HTTP 200 smoke"]
-  OWNER["Owner release approval"]
-  HOST["Static host deployment"]
-  ROLLBACK["Restore prior verified artifact"]
+  SOURCE["Source"]
+  BUILD["Test, build and dry-run"]
+  PREVIEW["Local HTTP 200"]
+  OWNER["Owner approval"]
+  HOST["Static deployment"]
+  ROLLBACK["Restore prior artifact"]
 
-  SOURCE --> CHECK
-  CHECK --> BUILD
+  SOURCE --> BUILD
   BUILD --> PREVIEW
   PREVIEW --> OWNER
   OWNER --> HOST
-  HOST -. release regression .-> ROLLBACK
+  HOST -. regression .-> ROLLBACK
 
   classDef authority fill:#0D1117,stroke:#F59E0B,color:#ffffff,stroke-width:2px;
   class OWNER authority;
   classDef control fill:#0D1117,stroke:#14B8A6,color:#ffffff,stroke-width:2px;
-  class CHECK,BUILD control;
+  class BUILD control;
   classDef core fill:#0D1117,stroke:#5B8CFF,color:#ffffff,stroke-width:2px;
   class SOURCE core;
   classDef surface fill:#0D1117,stroke:#22D3EE,color:#ffffff,stroke-width:1.5px;
