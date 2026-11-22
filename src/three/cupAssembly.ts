@@ -331,8 +331,11 @@ export class TropisipCupAssembly {
   private readonly pulpParticlesMat: THREE.MeshStandardMaterial;
   private readonly pulpMeta: InternalPulpMeta[] = [];
 
-  private readonly chunkGroups: Record<FlavorId, THREE.Group>;
-  private readonly chunkMetas: Record<FlavorId, FloatingChunkMeta[]>;
+  private readonly chunkGroups: Partial<Record<FlavorId, THREE.Group>> = {};
+  private readonly chunkMetas: Partial<Record<FlavorId, FloatingChunkMeta[]>> = {};
+  private readonly chunkCubeGeo: THREE.BufferGeometry;
+  private readonly chunkAvoGeo: THREE.BufferGeometry;
+  private readonly chunkWatermelonGeo: THREE.BufferGeometry;
 
   private readonly iceMetas: FloatingChunkMeta[] = [];
   private readonly mintMetas: FloatingChunkMeta[] = [];
@@ -343,6 +346,7 @@ export class TropisipCupAssembly {
 
   private currentFlavor: FlavorId = 'mango';
   private currentSize: CupSizeId = '16oz';
+  private introElapsed = 0;
 
   private readonly targetBaseColor = new THREE.Color(FLAVORS.mango.brightHex);
   private readonly targetDeepColor = new THREE.Color(FLAVORS.mango.deepHex);
@@ -403,9 +407,12 @@ export class TropisipCupAssembly {
     this.pulpParticlesMesh = pulpMesh;
     this.pulpParticlesMat = pulpMat;
 
-    const { chunkGroups, chunkMetas } = this.buildFloatingFruitChunks();
-    this.chunkGroups = chunkGroups;
-    this.chunkMetas = chunkMetas;
+    this.chunkCubeGeo = this.createSoftOrganicCube(0.23, 0.2, 0.22, 0.03);
+    this.chunkAvoGeo = this.createAvocadoWedgeGeometry();
+    this.chunkWatermelonGeo = this.createWatermelonWedgeGeometry();
+
+    // Only build Mango chunks eagerly for instant frame-0 startup; other 5 build on idle/switch
+    this.ensureFlavorChunksBuilt('mango');
 
     this.buildIceChiaMintInfusion();
     this.shadowMesh = this.buildClearTactileBaseGrip();
@@ -712,92 +719,74 @@ export class TropisipCupAssembly {
     return { pulpMesh, pulpMat };
   }
 
-  /** Layer 4: Flavor-Adaptive Procedural Floating Fruit Chunks for all 6 Tropisip Flavors */
-  private buildFloatingFruitChunks(): {
-    chunkGroups: Record<FlavorId, THREE.Group>;
-    chunkMetas: Record<FlavorId, FloatingChunkMeta[]>;
-  } {
-    const parent = this.layers.fruitChunks;
+  /** Layer 4: Lazy-built Flavor-Adaptive Procedural Floating Fruit Chunks for all 6 Tropisip Flavors */
+  public ensureFlavorChunksBuilt(id: FlavorId): void {
+    if (this.chunkGroups[id]) return;
 
-    const chunkGroups = {} as Record<FlavorId, THREE.Group>;
-    const chunkMetas = {} as Record<FlavorId, FloatingChunkMeta[]>;
-    const rand = mulberry32(772026);
+    const metaMap: Record<
+      FlavorId,
+      { geo: THREE.BufferGeometry; tint: number; roughness: number; count: number; feature: string; seed: number }
+    > = {
+      mango: { geo: this.chunkCubeGeo, tint: 0xffce1f, roughness: 0.24, count: 9, feature: 'Dadu Mangga Arumanis Juicy', seed: 772026 },
+      avocado: { geo: this.chunkAvoGeo, tint: 0xb0d448, roughness: 0.36, count: 8, feature: 'Irisan Alpukat Mentega Segar', seed: 772127 },
+      dragonfruit: { geo: this.chunkCubeGeo, tint: 0xf41c73, roughness: 0.25, count: 9, feature: 'Potongan Buah Naga Merah Berbiji', seed: 772228 },
+      guava: { geo: this.chunkCubeGeo, tint: 0xf98f92, roughness: 0.32, count: 9, feature: 'Potongan Jambu Biji Merah', seed: 772329 },
+      watermelon: { geo: this.chunkWatermelonGeo, tint: 0xff4c4c, roughness: 0.22, count: 8, feature: 'Potongan Segitiga Semangka Merah', seed: 772430 },
+      melon: { geo: this.chunkCubeGeo, tint: 0xbae65c, roughness: 0.24, count: 9, feature: 'Dadu Melon Hijau Sky Rocket', seed: 772531 },
+    };
 
-    const cubeGeo = this.createSoftOrganicCube(0.23, 0.2, 0.22, 0.03);
-    const avoGeo = this.createAvocadoWedgeGeometry();
-    const watermelonGeo = this.createWatermelonWedgeGeometry();
+    const cfg = metaMap[id];
+    const rand = mulberry32(cfg.seed);
+    const grp = new THREE.Group();
+    const metas: FloatingChunkMeta[] = [];
+    this.chunkGroups[id] = grp;
+    this.chunkMetas[id] = metas;
+    this.layers.fruitChunks.add(grp);
 
-    const configs: Array<{
-      id: FlavorId;
-      geo: THREE.BufferGeometry;
-      tint: number;
-      roughness: number;
-      count: number;
-      feature: string;
-    }> = [
-      { id: 'mango', geo: cubeGeo, tint: 0xffce1f, roughness: 0.24, count: 9, feature: 'Dadu Mangga Arumanis Juicy' },
-      { id: 'avocado', geo: avoGeo, tint: 0xb0d448, roughness: 0.36, count: 8, feature: 'Irisan Alpukat Mentega Segar' },
-      { id: 'dragonfruit', geo: cubeGeo, tint: 0xf41c73, roughness: 0.25, count: 9, feature: 'Potongan Buah Naga Merah Berbiji' },
-      { id: 'guava', geo: cubeGeo, tint: 0xf98f92, roughness: 0.32, count: 9, feature: 'Potongan Jambu Biji Merah' },
-      { id: 'watermelon', geo: watermelonGeo, tint: 0xff4c4c, roughness: 0.22, count: 8, feature: 'Potongan Segitiga Semangka Merah' },
-      { id: 'melon', geo: cubeGeo, tint: 0xbae65c, roughness: 0.24, count: 9, feature: 'Dadu Melon Hijau Sky Rocket' },
-    ];
-
-    configs.forEach(({ id, geo, tint, roughness, count, feature }) => {
-      const grp = new THREE.Group();
-      chunkGroups[id] = grp;
-      chunkMetas[id] = [];
-      parent.add(grp);
-
-      const tex = createFruitFleshTexture(id);
-      const mat = new THREE.MeshPhysicalMaterial({
-        map: tex,
-        bumpMap: tex,
-        bumpScale: 0.012,
-        color: tint,
-        roughness,
-        clearcoat: 0.78,
-        clearcoatRoughness: 0.14,
-        envMapIntensity: 1.35,
-      });
-
-      for (let i = 0; i < count; i += 1) {
-        const angle = (i / count) * Math.PI * 2 + rand() * 0.35;
-        const ringR = 0.28 + (i % 3) * 0.19;
-        const y = 0.74 + (rand() - 0.5) * 0.34;
-        const basePos = new THREE.Vector3(Math.cos(angle) * ringR, y, Math.sin(angle) * ringR);
-        const radialDir = new THREE.Vector3(
-          Math.cos(angle),
-          (rand() - 0.35) * 0.55,
-          Math.sin(angle),
-        ).normalize();
-
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.position.copy(basePos);
-        mesh.rotation.set(rand() * Math.PI, rand() * Math.PI, rand() * Math.PI);
-        mesh.scale.setScalar(0.8 + rand() * 0.34);
-        tagLayer(mesh, 'fruitChunks', feature);
-        grp.add(mesh);
-
-        chunkMetas[id].push({
-          mesh,
-          basePos,
-          radialDir,
-          rotSpeed: new THREE.Vector3(
-            (rand() - 0.5) * 0.5,
-            (rand() - 0.5) * 0.6,
-            (rand() - 0.5) * 0.4,
-          ),
-          phase: rand() * Math.PI * 2,
-        });
-      }
-
-      if (id !== 'mango') {
-        grp.visible = false;
-      }
+    const tex = createFruitFleshTexture(id);
+    const mat = new THREE.MeshPhysicalMaterial({
+      map: tex,
+      bumpMap: tex,
+      bumpScale: 0.012,
+      color: cfg.tint,
+      roughness: cfg.roughness,
+      clearcoat: 0.78,
+      clearcoatRoughness: 0.14,
+      envMapIntensity: 1.35,
     });
 
-    return { chunkGroups, chunkMetas };
+    for (let i = 0; i < cfg.count; i += 1) {
+      const angle = (i / cfg.count) * Math.PI * 2 + rand() * 0.35;
+      const ringR = 0.28 + (i % 3) * 0.19;
+      const y = 0.74 + (rand() - 0.5) * 0.34;
+      const basePos = new THREE.Vector3(Math.cos(angle) * ringR, y, Math.sin(angle) * ringR);
+      const radialDir = new THREE.Vector3(
+        Math.cos(angle),
+        (rand() - 0.35) * 0.55,
+        Math.sin(angle),
+      ).normalize();
+
+      const mesh = new THREE.Mesh(cfg.geo, mat);
+      mesh.position.copy(basePos);
+      mesh.rotation.set(rand() * Math.PI, rand() * Math.PI, rand() * Math.PI);
+      mesh.scale.setScalar(0.8 + rand() * 0.34);
+      tagLayer(mesh, 'fruitChunks', cfg.feature);
+      grp.add(mesh);
+
+      metas.push({
+        mesh,
+        basePos,
+        radialDir,
+        rotSpeed: new THREE.Vector3(
+          (rand() - 0.5) * 0.5,
+          (rand() - 0.5) * 0.6,
+          (rand() - 0.5) * 0.4,
+        ),
+        phase: rand() * Math.PI * 2,
+      });
+    }
+
+    grp.visible = id === this.currentFlavor;
   }
 
   private createSoftOrganicCube(w: number, h: number, d: number, jitter: number): THREE.BufferGeometry {
@@ -1085,6 +1074,7 @@ export class TropisipCupAssembly {
   }
 
   public setFlavor(flavorId: FlavorId): void {
+    this.ensureFlavorChunksBuilt(flavorId);
     this.currentFlavor = flavorId;
     const spec = FLAVORS[flavorId];
     this.targetBaseColor.set(spec.brightHex);
@@ -1103,9 +1093,54 @@ export class TropisipCupAssembly {
     this.currentSize = sizeId;
   }
 
+  /**
+   * Snaps initial transforms to the exact starting Hero pose BEFORE frame 0 paints
+   * so there is zero sideways jump or jarring pop-in on first load.
+   */
+  public snapToKinematics(kinematics: StageKinematics, reducedMotion = false): void {
+    this.introElapsed = reducedMotion ? 1.0 : 0.0;
+    const introEase = reducedMotion ? 1.0 : 0.0;
+    const introScale = 0.94 + 0.06 * introEase;
+    const sizeSpec = FLAVORS[this.currentFlavor].sizes[this.currentSize];
+    this.currentScaleY = sizeSpec.cupScaleY;
+    this.currentScaleXZ = sizeSpec.cupScaleXZ;
+
+    this.root.position.set(
+      kinematics.assemblyOffsetX,
+      reducedMotion ? 0 : -0.18 * (1 - introEase),
+      0,
+    );
+    this.root.rotation.set(
+      kinematics.assemblyTiltX,
+      kinematics.assemblyRotationY + (reducedMotion ? 0 : 0.22 * (1 - introEase)),
+      0,
+    );
+    this.root.scale.set(
+      this.currentScaleXZ * introScale,
+      this.currentScaleY * introScale,
+      this.currentScaleXZ * introScale,
+    );
+
+    (Object.keys(this.layers) as LayerKey[]).forEach((key) => {
+      const grp = this.layers[key];
+      const target = kinematics.layers[key];
+      grp.position.y = target.offsetY;
+      grp.rotation.y = target.rotationY;
+      grp.rotation.z = target.tiltZ;
+    });
+  }
+
   public update(elapsed: number, dt: number, kinematics: StageKinematics, reducedMotion = false): void {
-    const smooth = 1 - Math.exp(-Math.min(dt, 0.05) * 11.5);
+    const safeDt = Math.min(dt, 0.05);
+    const smooth = 1 - Math.exp(-safeDt * 11.5);
     const animTime = reducedMotion ? 0 : elapsed;
+
+    // Silky cubic-out entrance glide over 0.78s (zero snap, zero overshoot)
+    this.introElapsed = reducedMotion ? 1.0 : Math.min(1.0, this.introElapsed + safeDt / 0.78);
+    const introEase = 1 - Math.pow(1 - this.introElapsed, 3);
+    const introScale = 0.94 + 0.06 * introEase;
+    const introOffsetY = reducedMotion ? 0 : -0.18 * (1 - introEase);
+    const introSpinY = reducedMotion ? 0 : 0.22 * (1 - introEase);
 
     this.juiceUniforms.uTime.value = animTime;
     this.juiceUniforms.uBaseColor.value.lerp(this.targetBaseColor, smooth);
@@ -1141,17 +1176,21 @@ export class TropisipCupAssembly {
 
     this.pulpParticlesMat.color.lerp(this.targetPulpColor, smooth);
 
-    // Live 16oz / 22oz scaling
+    // Live 16oz / 22oz scaling combined with silky entrance scale
     const sizeSpec = FLAVORS[this.currentFlavor].sizes[this.currentSize];
     this.currentScaleY = THREE.MathUtils.lerp(this.currentScaleY, sizeSpec.cupScaleY, smooth);
     this.currentScaleXZ = THREE.MathUtils.lerp(this.currentScaleXZ, sizeSpec.cupScaleXZ, smooth);
-    this.root.scale.set(this.currentScaleXZ, this.currentScaleY, this.currentScaleXZ);
+    this.root.scale.set(
+      this.currentScaleXZ * introScale,
+      this.currentScaleY * introScale,
+      this.currentScaleXZ * introScale,
+    );
 
-    // Global turntable + organic float
+    // Global turntable + organic float + smooth entrance settle
     this.root.position.x = THREE.MathUtils.lerp(this.root.position.x, kinematics.assemblyOffsetX, smooth);
-    this.root.position.y = reducedMotion ? 0 : Math.sin(animTime * 1.15) * 0.036;
-    const idleSway = reducedMotion ? 0 : Math.sin(animTime * 0.55) * 0.12;
-    this.root.rotation.y = kinematics.assemblyRotationY + idleSway;
+    this.root.position.y = (reducedMotion ? 0 : Math.sin(animTime * 1.15) * 0.036) + introOffsetY;
+    const idleSway = reducedMotion ? 0 : Math.sin(animTime * 0.55) * 0.12 * introEase;
+    this.root.rotation.y = kinematics.assemblyRotationY + idleSway + introSpinY;
     this.root.rotation.x = kinematics.assemblyTiltX;
 
     // Explode 6 botanical layers smoothly
@@ -1185,18 +1224,20 @@ export class TropisipCupAssembly {
       this.pulpParticlesMesh.instanceMatrix.needsUpdate = true;
     }
 
-    // Flavor-specific floating fruit chunks across all 6 flavors
+    // Flavor-specific floating fruit chunks across all 6 flavors (only animate built chunks)
     const chunkSpread = kinematics.layers.fruitChunks.radialSpread;
     FLAVOR_ORDER.forEach((id) => {
+      const grp = this.chunkGroups[id];
+      const metas = this.chunkMetas[id];
+      if (!grp || !metas) return;
+
       const goal = id === this.currentFlavor ? 1 : 0;
       this.chunkWeights[id] = THREE.MathUtils.lerp(this.chunkWeights[id], goal, smooth * 1.35);
       const w = this.chunkWeights[id];
-      const grp = this.chunkGroups[id];
       grp.visible = w > 0.02;
       if (!grp.visible) return;
       grp.scale.setScalar(0.35 + w * 0.65);
 
-      const metas = this.chunkMetas[id];
       for (let i = 0; i < metas.length; i += 1) {
         const m = metas[i];
         const bobY = reducedMotion ? 0 : Math.sin(animTime * 1.4 + m.phase) * 0.04;

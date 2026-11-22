@@ -11,8 +11,9 @@ import * as THREE from 'three';
  * - Subtle dappled botanical palm-canopy modulation in the upper hemisphere
  */
 export function createSunlitStudioEnvMap(renderer: THREE.WebGLRenderer): THREE.Texture {
-  const width = 512;
-  const height = 256;
+  // 256x128 is 4x faster on mount and visually identical after PMREM mipmap pre-filtering
+  const width = 256;
+  const height = 128;
   const data = new Float32Array(width * height * 4);
 
   const smoothstep = (e0: number, e1: number, x: number): number => {

@@ -37,6 +37,7 @@ export const StageCanvas: React.FC<StageCanvasProps> = memo(
     const lastPointerRef = useRef<[number, number]>([780, 420]);
 
     const [webglError, setWebglError] = useState(false);
+    const [stageReady, setStageReady] = useState(false);
     const [telemetry, setTelemetry] = useState<MacroTelemetry>(DEFAULT_TELEMETRY);
 
     // Mount WebGL stage once; zero React re-renders on pointermove or scroll (rerender-use-ref-transient-values)
@@ -58,6 +59,7 @@ export const StageCanvas: React.FC<StageCanvasProps> = memo(
           macroCanvas,
           getScrollProgress: () => scrollProgressRef.current,
           onTelemetry: setTelemetry,
+          onReady: () => setStageReady(true),
         });
         stageRef.current = stage;
       } catch {
@@ -134,7 +136,10 @@ export const StageCanvas: React.FC<StageCanvasProps> = memo(
             }}
           />
 
-          <canvas ref={mainCanvasRef} className="stage-webgl-canvas" />
+          <canvas
+            ref={mainCanvasRef}
+            className={`stage-webgl-canvas ${stageReady ? 'is-ready' : ''}`}
+          />
 
           {webglError ? (
             <div className="stage-fallback-note">
